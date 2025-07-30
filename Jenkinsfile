@@ -59,7 +59,7 @@ pipeline {
                           docker pull $FULL_TAG &&
                           docker stop backend || true &&
                           docker rm backend || true &&
-                          docker run -d -p 3000:3000 --name my-node-api $FULL_TAG
+                          docker run -d -p 3000:3000 --name backend $FULL_TAG
                         '
                         """
                         echo "✅ Deployment succeeded!"
@@ -75,7 +75,7 @@ pipeline {
                               docker pull $DOCKER_IMAGE:$previousTag &&
                               docker stop backend || true &&
                               docker rm backend || true &&
-                              docker run -d -p 3000:3000 --name my-node-api $DOCKER_IMAGE:$previousTag
+                              docker run -d -p 3000:3000 --name backend $DOCKER_IMAGE:$previousTag
                             '
                             """
                         } else {
