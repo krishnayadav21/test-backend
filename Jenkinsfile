@@ -44,7 +44,8 @@ pipeline {
                         sshagent(credentials: ['ssh-key']) {
                             sh """
                                 ssh -o StrictHostKeyChecking=no ubuntu@35.173.156.28 '
-                                whoami '
+                                 docker pull $FULL_TAG && \\
+                        //       docker run -d -p 3000:3000 --name backend $FULL_TAG'
                             """
                         }
                         // withCredentials([sshUserPrivateKey(credentialsId: 'ssh-key',keyFileVariable: 'EC2_KEY_SSH', usernameVariable: 'username')])
