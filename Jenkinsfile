@@ -53,10 +53,10 @@ pipeline {
                 script {
                     try {
                         echo "🚀 Deploying new version: $FULL_TAG"
-                        withCredentials([sshUserPrivateKey(credentialsId: 'ec2-ssh-key',keyFileVariable: 'EC2_KEY', usernameVariable: 'username')])
+                        withCredentials([sshUserPrivateKey(credentialsId: 'ec2-ssh-key',keyFileVariable: 'EC2_KEY_SSH', usernameVariable: 'username')])
                         {
                             sh """
-                            ssh -i $EC2_KEY -o StrictHostKeyChecking=no $EC2_USER@$EC2_HOST \\
+                            ssh -i $EC2_KEY_SSH -o StrictHostKeyChecking=no $EC2_USER@$EC2_HOST \\
                                 docker pull $FULL_TAG && \\
                                 docker run -d -p 3000:3000 --name backend $FULL_TAG
                             """
