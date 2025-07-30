@@ -1,0 +1,97 @@
+pipeline {
+    agent any
+
+    parameters {
+        string(name: 'DEPLOY_VERSION', defaultValue: 'v1.0.0', description: 'Deployment version (e.g., v1.0.0)')
+        choice(name: 'TARGET_ENV', choices: ['dev', 'staging', 'prod'], description: 'Target environment')
+        string(name: 'GIT_BRANCH', defaultValue: 'main', description: 'Git branch to deploy')
+    }
+
+    environment {
+        DOCKER_IMAGE = 'yourusername/my-node-api'
+        FULL_TAG = "${DOCKER_IMAGE}:${params.DEPLOY_VERSION}"
+        EC2_USER = 'ec2-user'
+        EC2_HOST = 'your-ec2-public-ip'
+        EC2_KEY = credentials('ec2-ssh-key')
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                git branch: "${params.GIT_BRANCH}", url: 'https://your-git-repo-url.git'
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    sh "docker build -t $FULL_TAG ."
+                }
+            }
+        }
+
+        stage('Push Docker Image') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'docker-hub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                    sh """
+                        echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
+                        docker push $FULL_TAG
+                    """
+                }
+            }
+        }
+
+        stage('Deploy to EC2') {
+            steps {
+                script {
+                    try {
+                        echo "🚀 Deploying new version: $FULL_TAG"
+
+                        sh """
+                        ssh -o StrictHostKeyChecking=no -i $EC2_KEY $EC2_USER@$EC2_HOST '
+                          docker pull $FULL_TAG &&
+                          docker stop my-node-api || true &&
+                          docker rm my-node-api || true &&
+                          docker run -d -p 3000:3000 --name my-node-api $FULL_TAG
+                        '
+                        """
+                        echo "✅ Deployment succeeded!"
+                    } catch (err) {
+                        echo "❌ Deployment failed. Rolling back to previous version..."
+
+                        def previousTag = getPreviousDockerTag()
+
+                        if (previousTag) {
+                            echo "🔁 Rolling back to ${previousTag}"
+                            sh """
+                            ssh -o StrictHostKeyChecking=no -i $EC2_KEY $EC2_USER@$EC2_HOST '
+                              docker pull $DOCKER_IMAGE:$previousTag &&
+                              docker stop my-node-api || true &&
+                              docker rm my-node-api || true &&
+                              docker run -d -p 3000:3000 --name my-node-api $DOCKER_IMAGE:$previousTag
+                            '
+                            """
+                        } else {
+                            echo "⚠️ No previous version found to rollback to."
+                        }
+
+                        error("Deployment failed and rollback complete.")
+                    }
+                }
+            }
+        }
+    }
+}
+
+def getPreviousDockerTag() {
+    try {
+        def output = sh(
+            script: "curl -s https://hub.docker.com/v2/repositories/${env.DOCKER_IMAGE}/tags | jq -r '.results[].name' | grep -v latest | sort -Vr | sed -n 2p",
+            returnStdout: true
+        ).trim()
+        return output
+    } catch (err) {
+        echo "Could not determine previous tag: ${err.message}"
+        return null
+    }
+}
