@@ -25,17 +25,6 @@ pipeline {
                 }
             }
         }
-
-        // stage('Push Docker Image') {
-        //     steps {
-        //         withCredentials([usernamePassword(credentialsId: 'docker-hub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-        //             sh """
-        //                 echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
-        //                 docker push $FULL_TAG
-        //             """
-        //         }
-        //     }
-        // }
         
         stage('Push Docker Image') {
             steps {
@@ -52,15 +41,21 @@ pipeline {
                 script {
                     try {
                         echo "🚀 Deploying new version: $FULL_TAG"
-                        withCredentials([sshUserPrivateKey(credentialsId: 'ssh-key',keyFileVariable: 'EC2_KEY_SSH', usernameVariable: 'username')])
-                        {
+                        sshagent(credentials: ['ssh-key']) {
                             sh """
-                            echo $EC2_KEY_SSH
-                            ssh -i $EC2_KEY_SSH -o StrictHostKeyChecking=no ${username}@35.173.186.28 \\
-                                'docker pull $FULL_TAG && \\
-                                docker run -d -p 3000:3000 --name backend $FULL_TAG'
+                                ssh -o StrictHostKeyChecking=no ubuntu@35.173.156.28 '
+                                whoami '
                             """
                         }
+                        // withCredentials([sshUserPrivateKey(credentialsId: 'ssh-key',keyFileVariable: 'EC2_KEY_SSH', usernameVariable: 'username')])
+                        // {
+                        //     sh """
+                        //     echo $EC2_KEY_SSH
+                        //     ssh -i $EC2_KEY_SSH -o StrictHostKeyChecking=no ${username}@35.173.186.28 \\
+                        //         'docker pull $FULL_TAG && \\
+                        //         docker run -d -p 3000:3000 --name backend $FULL_TAG'
+                        //     """
+                        // }
                         // sh """
                         // ssh -o StrictHostKeyChecking=no -i $EC2_KEY $EC2_USER@$EC2_HOST '
                         //   docker pull $FULL_TAG &&
