@@ -10,7 +10,6 @@ pipeline {
         FULL_TAG = "${DOCKER_IMAGE}:${params.DEPLOY_VERSION}"
         EC2_USER = 'ubuntu'
         EC2_HOST = '35.173.186.28'
-        EC2_KEY = credentials('ec2-ssh-key')
     }
     stages {
         stage('Checkout') {
@@ -53,9 +52,10 @@ pipeline {
                 script {
                     try {
                         echo "🚀 Deploying new version: $FULL_TAG"
-                        withCredentials([sshUserPrivateKey(credentialsId: 'ec2-ssh-key',keyFileVariable: 'EC2_KEY_SSH', usernameVariable: 'username')])
+                        withCredentials([sshUserPrivateKey(credentialsId: 'ssh-key',keyFileVariable: 'EC2_KEY_SSH', usernameVariable: 'username')])
                         {
                             sh """
+                            echo $EC2_KEY_SSH
                             ssh -i $EC2_KEY_SSH -o StrictHostKeyChecking=no ${username}@35.173.186.28 \\
                                 'docker pull $FULL_TAG && \\
                                 docker run -d -p 3000:3000 --name backend $FULL_TAG'
