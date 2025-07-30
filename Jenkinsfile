@@ -57,9 +57,7 @@ pipeline {
                         {
                             sh """
                             ssh -i $EC2_KEY -o StrictHostKeyChecking=no $EC2_USER@$EC2_HOST \\
-                                docker pull $FULL_TAG &&
-                                // docker stop backend || true &&
-                                // docker rm backend || true &&
+                                docker pull $FULL_TAG && \\
                                 docker run -d -p 3000:3000 --name backend $FULL_TAG
                             """
                         }
