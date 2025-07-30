@@ -45,7 +45,7 @@ pipeline {
                         {
                             sh """
                             echo $EC2_KEY_SSH
-                            ssh -i $EC2_KEY_SSH -o StrictHostKeyChecking=no ${username}@35.173.186.28 \\
+                            ssh -i ${EC2_KEY_SSH} -o StrictHostKeyChecking=no ${username}@35.173.186.28 \\
                                 'docker pull $FULL_TAG && 
                                  docker run -d -p 3000:3000 --name backend $FULL_TAG'
                             """
