@@ -10,8 +10,7 @@ pipeline {
         FULL_TAG = "${DOCKER_IMAGE}:${params.DEPLOY_VERSION}"
         EC2_USER = 'ubuntu'
         EC2_HOST = '35.173.186.28'
-        // EC2_KEY = credentials('ec2-ssh-key')
-        EC2_KEY = sshagent(credentials: ['ec2-ssh-key'])
+        EC2_KEY = credentials('ec2-ssh-key')
     }
     stages {
         stage('Checkout') {
