@@ -67,6 +67,7 @@ pipeline {
                         // """
                         echo "✅ Deployment succeeded!"
                     } catch (err) {
+                        echo err
                         echo "❌ Deployment failed. Rolling back to previous version..."
 
                         def previousTag = getPreviousDockerTag()
