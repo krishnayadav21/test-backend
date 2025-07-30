@@ -57,8 +57,8 @@ pipeline {
                         sh """
                         ssh -o StrictHostKeyChecking=no -i $EC2_KEY $EC2_USER@$EC2_HOST '
                           docker pull $FULL_TAG &&
-                          docker stop my-node-api || true &&
-                          docker rm my-node-api || true &&
+                          docker stop backend || true &&
+                          docker rm backend || true &&
                           docker run -d -p 3000:3000 --name my-node-api $FULL_TAG
                         '
                         """
@@ -73,8 +73,8 @@ pipeline {
                             sh """
                             ssh -o StrictHostKeyChecking=no -i $EC2_KEY $EC2_USER@$EC2_HOST '
                               docker pull $DOCKER_IMAGE:$previousTag &&
-                              docker stop my-node-api || true &&
-                              docker rm my-node-api || true &&
+                              docker stop backend || true &&
+                              docker rm backend || true &&
                               docker run -d -p 3000:3000 --name my-node-api $DOCKER_IMAGE:$previousTag
                             '
                             """
