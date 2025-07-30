@@ -8,17 +8,17 @@ pipeline {
     }
 
     environment {
-        DOCKER_IMAGE = 'yourusername/my-node-api'
+        DOCKER_IMAGE = 'krishnayadav21/backend'
         FULL_TAG = "${DOCKER_IMAGE}:${params.DEPLOY_VERSION}"
-        EC2_USER = 'ec2-user'
-        EC2_HOST = 'your-ec2-public-ip'
+        EC2_USER = 'ubuntu'
+        EC2_HOST = '35.173.186.28'
         EC2_KEY = credentials('ec2-ssh-key')
     }
 
     stages {
         stage('Checkout') {
             steps {
-                git branch: "${params.GIT_BRANCH}", url: 'https://your-git-repo-url.git'
+                git branch: "${params.GIT_BRANCH}", url: 'https://github.com/krishnayadav21/test-backend.git'
             }
         }
 
