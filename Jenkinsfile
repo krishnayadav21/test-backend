@@ -1,12 +1,10 @@
 pipeline {
     agent any
-
     parameters {
         string(name: 'DEPLOY_VERSION', defaultValue: 'v1.0.0', description: 'Deployment version (e.g., v1.0.0)')
         choice(name: 'TARGET_ENV', choices: ['dev', 'staging', 'prod'], description: 'Target environment')
         string(name: 'GIT_BRANCH', defaultValue: 'main', description: 'Git branch to deploy')
     }
-
     environment {
         DOCKER_IMAGE = 'krishnayadav21/backend'
         FULL_TAG = "${DOCKER_IMAGE}:${params.DEPLOY_VERSION}"
@@ -14,14 +12,13 @@ pipeline {
         EC2_HOST = '35.173.186.28'
         EC2_KEY = credentials('ec2-ssh-key')
     }
-
     stages {
         stage('Checkout') {
             steps {
                 git branch: "${params.GIT_BRANCH}", url: 'https://github.com/krishnayadav21/test-backend.git'
             }
         }
-
+        
         stage('Build Docker Image') {
             steps {
                 script {
@@ -40,6 +37,7 @@ pipeline {
         //         }
         //     }
         // }
+        
         stage('Push Docker Image') {
             steps {
                 withCredentials([usernamePassword( credentialsId: 'docker-hub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS' )]) {
