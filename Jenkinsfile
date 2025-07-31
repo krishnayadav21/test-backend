@@ -40,7 +40,7 @@ pipeline {
             steps {
                 script {
                     try {
-                        echo "🚀 Deploying new version: $FULL_TAG"
+                        echo "Deploying new version: $FULL_TAG"
                         // sshagent(credentials: ['ssh-key'])
                         // {
                         //     sh """
@@ -57,10 +57,10 @@ pipeline {
                           docker run -d -p 3000:3000 --name backend $FULL_TAG
                         '
                         """
-                        echo "✅ Deployment succeeded!"
+                        echo "Deployment succeeded!"
                     } catch (err) {
                         echo err
-                        echo "❌ Deployment failed. Rolling back to previous version..."
+                        echo "Deployment failed. Rolling back to previous version..."
 
                         def previousTag = getPreviousDockerTag()
 
