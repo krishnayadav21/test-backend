@@ -42,6 +42,9 @@ pipeline {
                 script {
                     try {
                         echo "Deploying new version: $FULL_TAG"
+                        sshagent(credentials: ['ssh-key']) {
+                            sh 'ssh -o StrictHostKeyChecking=no ubuntu@52.207.126.136 "docker ps"'
+                        }
                         // sshagent(credentials: ['ssh-key'])
                         // {
                         //     sh """
@@ -50,14 +53,14 @@ pipeline {
                         //          docker run -d -p 3000:3000 --name backend $FULL_TAG'
                         //     """
                         // }
-                        sh """
-                        ssh -o StrictHostKeyChecking=no -i $EC2_KEY $EC2_USER@$EC2_HOST '
-                          docker pull $FULL_TAG &&
-                          docker stop backend || true &&
-                          docker rm backend || true &&
-                          docker run -d -p 3000:3000 --name backend $FULL_TAG
-                        '
-                        """
+                        // sh """
+                        // ssh -o StrictHostKeyChecking=no -i $EC2_KEY $EC2_USER@$EC2_HOST '
+                        //   docker pull $FULL_TAG &&
+                        //   docker stop backend || true &&
+                        //   docker rm backend || true &&
+                        //   docker run -d -p 3000:3000 --name backend $FULL_TAG
+                        // '
+                        // """
                         echo "Deployment succeeded!"
                     } catch (err) {
                         echo "Deployment failed. Rolling back to previous version..."
