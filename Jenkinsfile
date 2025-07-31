@@ -9,7 +9,7 @@ pipeline {
         DOCKER_IMAGE = 'krishnayadav21/backend'
         FULL_TAG = "${DOCKER_IMAGE}:${params.DEPLOY_VERSION}"
         EC2_USER = 'ubuntu'
-        EC2_HOST = '35.173.186.28'
+        EC2_HOST = '52.207.126.136'
     }
     stages {
         stage('Checkout') {
@@ -44,7 +44,7 @@ pipeline {
                         // sshagent(credentials: ['ssh-key'])
                         // {
                         //     sh """
-                        //     ssh -o StrictHostKeyChecking=no ${username}@35.173.186.28 \\
+                        //     ssh -o StrictHostKeyChecking=no ${username}@52.207.126.136 \\
                         //         'docker pull $FULL_TAG && 
                         //          docker run -d -p 3000:3000 --name backend $FULL_TAG'
                         //     """
