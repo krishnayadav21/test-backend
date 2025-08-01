@@ -11,6 +11,7 @@ pipeline {
         EC2_USER = 'ubuntu'
         EC2_HOST = '52.207.126.136'
         EC2_KEY = credentials('ssh-key')
+        PEM_PATH = "C:\\Users\\Dell\\Downloads\\github-actions.pem"
     }
     stages {
         stage('Checkout') {
@@ -18,7 +19,20 @@ pipeline {
                 git branch: "${params.GIT_BRANCH}", url: 'https://github.com/krishnayadav21/test-backend.git'
             }
         }
-        
+        stage('Check PEM File Access') {
+            steps {
+                echo "Checking PEM file access: ${env.PEM_PATH}"
+                bat "type \"${env.PEM_PATH}\""
+            }
+        }
+
+        stage('SSH Test') {
+            steps {
+                echo "Testing SSH connection..."
+                bat "ssh -i \"${env.PEM_PATH}\" -o StrictHostKeyChecking=no ${env.EC2_HOST} \"echo SSH connection successful\""
+            }
+        }
+
         stage('Build Docker Image') {
             steps {
                 script {
