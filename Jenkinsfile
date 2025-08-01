@@ -42,14 +42,12 @@ pipeline {
                 script {
                     try {
                         echo "Deploying new version: $FULL_TAG"
-                        sshagent(credentials: ['ssh-key']) {
                             bat """ ssh -o StrictHostKeyChecking=no ubuntu@52.207.126.136 
                                 "docker pull $FULL_TAG && ^
                                 docker stop backend || true && ^
                                 docker rm backend || true && ^
                                 docker run -d -p 3000:3000 --name backend $FULL_TAG"
                             """
-                        }
                         // sshagent(credentials: ['ssh-key'])
                         // {
                         //     sh """
