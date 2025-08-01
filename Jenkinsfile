@@ -42,7 +42,7 @@ pipeline {
                 script {
                     try {
                         echo "Deploying new version: $FULL_TAG"
-                            bat """ ssh -o StrictHostKeyChecking=no ubuntu@52.207.126.136 
+                            bat """ ssh -tt -o StrictHostKeyChecking=no ubuntu@52.207.126.136 
                                 "docker pull $FULL_TAG && ^
                                 docker stop backend || true && ^
                                 docker rm backend || true && ^
