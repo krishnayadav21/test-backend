@@ -5,6 +5,7 @@ pipeline {
         choice(name: 'TARGET_ENV', choices: ['dev', 'staging', 'prod'], description: 'Target environment')
         string(name: 'GIT_BRANCH', defaultValue: 'main', description: 'Git branch to deploy')
     }
+    
     environment {
         DOCKER_IMAGE = 'krishnayadav21/backend'
         FULL_TAG = "${DOCKER_IMAGE}:${params.DEPLOY_VERSION}"
@@ -12,12 +13,18 @@ pipeline {
         EC2_HOST = '52.207.126.136'
         EC2_KEY = credentials('ssh-key')
         PEM_PATH = "C:\\Users\\Dell\\Downloads\\github-actions.pem"
-
     }
+    
     stages {
         stage('Checkout') {
             steps {
                 git branch: "${params.GIT_BRANCH}", url: 'https://github.com/krishnayadav21/test-backend.git'
+            }
+        }
+        stage('Check PEM File Access') {
+            steps {
+                echo "Checking PEM file access: ${env.PEM_PATH}"
+                bat "type \"${env.PEM_PATH}\""
             }
         }
         stage('SSH Test') {
