@@ -23,8 +23,7 @@ pipeline {
         stage('SSH Test') {
             steps {
                 echo "Testing SSH connection..."
-                sh "ssh -i \"${env.PEM_PATH}\" -o StrictHostKeyChecking=no $EC2_USER@${env.EC2_HOST} 
-                \"echo SSH connection successful\""
+                sh "ssh -i \"${env.PEM_PATH}\" -o StrictHostKeyChecking=no $EC2_USER@${env.EC2_HOST} \"echo SSH connection successful\""
             }
         }
         stage('Build Docker Image') {
