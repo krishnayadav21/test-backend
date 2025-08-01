@@ -31,7 +31,7 @@ pipeline {
                 echo "Reading PEM file using PowerShell..."
         
                 powershell '''
-                    Write-Host "🔍 Displaying contents of PEM file from WSL path..."
+                    Write-Host "Displaying contents of PEM file from WSL path..."
                     Get-Content '\\\\wsl`$\\Ubuntu\\home\\krishna\\github-actions.pem'
                 '''
             }
