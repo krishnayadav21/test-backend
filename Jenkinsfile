@@ -12,7 +12,8 @@ pipeline {
         EC2_HOST = 'ubuntu@52.207.126.136'
         EC2_KEY = credentials('ssh-key')
         // PEM_PATH = "C:\\Users\\Dell\\Downloads\\github-actions.pem"
-        PEM_PATH = "\\\\wsl$\\Ubuntu\\home\\Dell\\github-actions.pem"
+        // PEM_PATH = "\\\\wsl\\$\\Ubuntu\\home\\Dell\\github-actions.pem"
+        PEM_PATH = "\\\\wsl${'$'}\\Ubuntu\\home\\krishna\\github-actions.pem"
     }
     stages {
         stage('Checkout') {
