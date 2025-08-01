@@ -42,18 +42,17 @@ pipeline {
         stage('SSH Test') {
             steps {
                 echo "Displaying PEM file contents for debug..."
-        
-                // Display PEM file from WSL via UNC path
+            
                 bat 'type "\\\\wsl$\\Ubuntu\\home\\krishna\\github-actions.pem"'
-        
+            
                 echo "Testing SSH connection..."
-        
-                // SSH command with escaped dollar sign in UNC path
+            
                 bat """
                     ssh -i "\\\\wsl${'$'}\\Ubuntu\\home\\krishna\\github-actions.pem" -o StrictHostKeyChecking=no ${env.EC2_HOST} "echo SSH connection successful"
                 """
             }
         }
+
 
 
         stage('Build Docker Image') {
