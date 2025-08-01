@@ -22,7 +22,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    sh "docker build -t $FULL_TAG ."
+                    bat "docker build -t $FULL_TAG ."
                 }
             }
         }
@@ -30,7 +30,7 @@ pipeline {
         stage('Push Docker Image') {
             steps {
                 withCredentials([usernamePassword( credentialsId: 'docker-hub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS' )]) {
-                    sh """
+                    bat """
                         echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
                         docker push $FULL_TAG
                     """
@@ -72,7 +72,7 @@ pipeline {
 
                         if (previousTag) {
                             echo "🔁 Rolling back to ${previousTag}"
-                            sh """
+                            bat """
                             ssh -o StrictHostKeyChecking=no -i $EC2_KEY $EC2_USER@$EC2_HOST '
                               docker pull $DOCKER_IMAGE:$previousTag &&
                               docker stop backend || true &&
