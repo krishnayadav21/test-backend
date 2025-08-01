@@ -9,15 +9,9 @@ pipeline {
         DOCKER_IMAGE = 'krishnayadav21/backend'
         FULL_TAG = "${DOCKER_IMAGE}:${params.DEPLOY_VERSION}"
         EC2_USER = 'ubuntu'
-        EC2_HOST = 'ubuntu@52.207.126.136'
+        EC2_HOST = '52.207.126.136'
         EC2_KEY = credentials('ssh-key')
-        // PEM_PATH = "C:\\Users\\Dell\\Downloads\\github-actions.pem"
-        // PEM_PATH = "\\\\wsl\\$\\Ubuntu\\home\\Dell\\github-actions.pem"
-        // PEM_PATH = "\\\\wsl${'$'}\\Ubuntu\\home\\krishna\\github-actions.pem"
-        // PEM_PATH = "//wsl//$/Ubuntu/home/krishna/github-actions.pem"
-        // PEM_PATH = "//wsl/\\$/Ubuntu/home/krishna/github-actions.pem"
-        PEM_PATH = '//wsl/\\$/Ubuntu/home/krishna/github-actions.pem'
-
+        PEM_PATH = "C:\\Users\\Dell\\Downloads\\github-actions.pem"
 
     }
     stages {
@@ -26,45 +20,20 @@ pipeline {
                 git branch: "${params.GIT_BRANCH}", url: 'https://github.com/krishnayadav21/test-backend.git'
             }
         }
-        stage('Read PEM using PowerShell') {
-            steps {
-                echo "Reading PEM file from WSL using PowerShell..."
-            
-                powershell '''
-                    Write-Host "Displaying contents of PEM file from WSL path..."
-                    Get-Content '\\\\wsl$\\Ubuntu\\home\\krishna\\github-actions.pem'
-                '''
-            }
-        }
-
-
-
-        // stage('SSH Test') {
-        //     steps {
-        //         echo "Testing SSH connection..."
-        //         sh "ssh -i \"${env.PEM_PATH}\" -o StrictHostKeyChecking=no ${env.EC2_HOST} \"echo SSH connection successful\""
-        //     }
-        // }
-
-
         stage('SSH Test') {
             steps {
-                echo "✅ Showing PEM file contents..."
-                bat 'type "\\\\wsl$\\Ubuntu\\home\\krishna\\github-actions.pem"'
-
-                echo "✅ Attempting SSH..."
-                bat 'ssh -i "\\\\wsl$\\Ubuntu\\home\\krishna\\github-actions.pem" -o StrictHostKeyChecking=no ubuntu@152.197.126.133 "echo SSH connection successful"'
+                echo "Testing SSH connection..."
+                sh "ssh -i \"${env.PEM_PATH}\" -o StrictHostKeyChecking=no $EC2_USER@${env.EC2_HOST} 
+                \"echo SSH connection successful\""
             }
         }
-
         stage('Build Docker Image') {
             steps {
                 script {
                     bat "docker build -t $FULL_TAG ."
                 }
             }
-        }
-        
+        }     
         stage('Push Docker Image') {
             steps {
                 withCredentials([usernamePassword( credentialsId: 'docker-hub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS' )]) {
@@ -80,46 +49,26 @@ pipeline {
                 script {
                     try {
                         echo "Deploying new version: $FULL_TAG"
-                            bat """ ssh -tt -o StrictHostKeyChecking=no ubuntu@52.207.126.136 
+                            bat """ ssh -tt -o StrictHostKeyChecking=no $EC2_USER@$EC2_HOST 
                                 "docker pull $FULL_TAG && ^
                                 docker stop backend || true && ^
                                 docker rm backend || true && ^
                                 docker run -d -p 3000:3000 --name backend $FULL_TAG"
                             """
-                        // sshagent(credentials: ['ssh-key'])
-                        // {
-                        //     sh """
-                        //     ssh -o StrictHostKeyChecking=no ${username}@52.207.126.136 \\
-                        //         'docker pull $FULL_TAG && 
-                        //          docker run -d -p 3000:3000 --name backend $FULL_TAG'
-                        //     """
-                        // }
-                        // sh """
-                        // ssh -o StrictHostKeyChecking=no -i $EC2_KEY $EC2_USER@$EC2_HOST '
-                        //   docker pull $FULL_TAG &&
-                        //   docker stop backend || true &&
-                        //   docker rm backend || true &&
-                        //   docker run -d -p 3000:3000 --name backend $FULL_TAG
-                        // '
-                        // """
                         echo "Deployment succeeded!"
                     } catch (err) {
                         echo "Deployment failed. Rolling back to previous version..."
-
                         def previousTag = getPreviousDockerTag()
-
                         if (previousTag) {
-                            echo "🔁 Rolling back to ${previousTag}"
-                            bat """
-                            ssh -o StrictHostKeyChecking=no -i $EC2_KEY $EC2_USER@$EC2_HOST '
-                              docker pull $DOCKER_IMAGE:$previousTag &&
-                              docker stop backend || true &&
-                              docker rm backend || true &&
-                              docker run -d -p 3000:3000 --name backend $DOCKER_IMAGE:$previousTag
-                            '
+                            echo "Rolling back to ${previousTag}"
+                            bat """ ssh -tt -o StrictHostKeyChecking=no -i $EC2_KEY $EC2_USER@$EC2_HOST
+                              "docker pull $DOCKER_IMAGE:$previousTag && ^
+                              docker stop backend || true && ^
+                              docker rm backend || true && ^
+                              docker run -d -p 3000:3000 --name backend $DOCKER_IMAGE:$previousTag"
                             """
                         } else {
-                            echo "⚠️ No previous version found to rollback to."
+                            echo "No previous version found to rollback to."
                         }
 
                         error("Deployment failed and rollback complete.")
@@ -132,7 +81,7 @@ pipeline {
 
 def getPreviousDockerTag() {
     try {
-        def output = sh(
+        def output = bat(
             script: "curl -s https://hub.docker.com/v2/repositories/${env.DOCKER_IMAGE}/tags | jq -r '.results[].name' | grep -v latest | sort -Vr | sed -n 2p",
             returnStdout: true
         ).trim()
