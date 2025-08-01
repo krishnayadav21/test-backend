@@ -15,7 +15,9 @@ pipeline {
         // PEM_PATH = "\\\\wsl\\$\\Ubuntu\\home\\Dell\\github-actions.pem"
         // PEM_PATH = "\\\\wsl${'$'}\\Ubuntu\\home\\krishna\\github-actions.pem"
         // PEM_PATH = "//wsl//$/Ubuntu/home/krishna/github-actions.pem"
-        PEM_PATH = "//wsl/\\$/Ubuntu/home/krishna/github-actions.pem"
+        // PEM_PATH = "//wsl/\\$/Ubuntu/home/krishna/github-actions.pem"
+        PEM_PATH = '//wsl/\\$/Ubuntu/home/krishna/github-actions.pem'
+
 
     }
     stages {
