@@ -41,19 +41,16 @@ pipeline {
         // }
 
 
-            stages {
-                stage('SSH Test') {
-                    steps {
-                        echo "✅ Showing PEM file contents..."
-                        bat 'type "\\\\wsl$\\Ubuntu\\home\\krishna\\github-actions.pem"'
-        
-                        echo "✅ Attempting SSH..."
-                        bat 'ssh -i "\\\\wsl$\\Ubuntu\\home\\krishna\\github-actions.pem" -o StrictHostKeyChecking=no ubuntu@152.197.126.133 "echo SSH connection successful"'
-                    }
+        stage('SSH Test') {
+                steps {
+                    echo "✅ Showing PEM file contents..."
+                    bat 'type "\\\\wsl$\\Ubuntu\\home\\krishna\\github-actions.pem"'
+    
+                    echo "✅ Attempting SSH..."
+                    bat 'ssh -i "\\\\wsl$\\Ubuntu\\home\\krishna\\github-actions.pem" -o StrictHostKeyChecking=no ubuntu@152.197.126.133 "echo SSH connection successful"'
                 }
             }
         }
-
 
         stage('Build Docker Image') {
             steps {
