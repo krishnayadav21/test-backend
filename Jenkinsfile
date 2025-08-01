@@ -28,14 +28,15 @@ pipeline {
         }
         stage('Read PEM using PowerShell') {
             steps {
-                echo "Reading PEM file using PowerShell..."
-        
+                echo "Reading PEM file from WSL using PowerShell..."
+            
                 powershell '''
                     Write-Host "Displaying contents of PEM file from WSL path..."
-                    Get-Content '\\\\wsl`$\\Ubuntu\\home\\krishna\\github-actions.pem'
+                    Get-Content '\\\\wsl$\\Ubuntu\\home\\krishna\\github-actions.pem'
                 '''
             }
         }
+
 
 
         // stage('SSH Test') {
