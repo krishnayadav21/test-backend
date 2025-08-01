@@ -36,12 +36,7 @@ pipeline {
         stage('SSH Test') {
             steps {
                 echo "Testing SSH connection..."
-                // withCredentials([sshUserPrivateKey(credentialsId: 'EC2_KEY', keyFileVariable: 'KEY')]) {
-                //     sh """
-                //         ssh -i $KEY -o StrictHostKeyChecking=no ${env.EC2_HOST} 'echo Connected'
-                //     """
-                // }
-                bat "ssh -i \"${env.PEM_PATH}\" -o StrictHostKeyChecking=no ${env.EC2_HOST} \"echo SSH connection successful\""
+                sh "ssh -i \"${env.PEM_PATH}\" -o StrictHostKeyChecking=no ${env.EC2_HOST} \"echo SSH connection successful\""
             }
         }
 
