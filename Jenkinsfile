@@ -33,10 +33,23 @@ pipeline {
             }
         }
 
+        // stage('SSH Test') {
+        //     steps {
+        //         echo "Testing SSH connection..."
+        //         sh "ssh -i \"${env.PEM_PATH}\" -o StrictHostKeyChecking=no ${env.EC2_HOST} \"echo SSH connection successful\""
+        //     }
+        // }
         stage('SSH Test') {
             steps {
+                echo "Displaying PEM file contents for debug..."
+                // Display PEM file from WSL via Windows UNC path
+                bat 'type "\\\\wsl$\\Ubuntu\\home\\krishna\\github-actions.pem"'
+            
                 echo "Testing SSH connection..."
-                sh "ssh -i \"${env.PEM_PATH}\" -o StrictHostKeyChecking=no ${env.EC2_HOST} \"echo SSH connection successful\""
+                // Run SSH command with PEM file path properly escaped
+                bat """
+                    ssh -i "\\\\wsl$\\Ubuntu\\home\\krishna\\github-actions.pem" -o StrictHostKeyChecking=no ${env.EC2_HOST} "echo SSH connection successful"
+                """
             }
         }
 
