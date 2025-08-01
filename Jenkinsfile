@@ -26,10 +26,14 @@ pipeline {
                 git branch: "${params.GIT_BRANCH}", url: 'https://github.com/krishnayadav21/test-backend.git'
             }
         }
-        stage('Check PEM File Access') {
+        stage('Read PEM using PowerShell') {
             steps {
-                echo "Checking PEM file access: ${env.PEM_PATH}"
-                bat "type \"${env.PEM_PATH}\""
+                echo "Reading PEM file using PowerShell..."
+        
+                powershell '''
+                    Write-Host "🔍 Displaying contents of PEM file from WSL path..."
+                    Get-Content "\\\\wsl$\\Ubuntu\\home\\krishna\\github-actions.pem"
+                '''
             }
         }
 
