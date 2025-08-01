@@ -39,20 +39,18 @@ pipeline {
         //         sh "ssh -i \"${env.PEM_PATH}\" -o StrictHostKeyChecking=no ${env.EC2_HOST} \"echo SSH connection successful\""
         //     }
         // }
+
         stage('SSH Test') {
             steps {
-                echo "Displaying PEM file contents for debug..."
-            
+                echo "Checking PEM file access..."
                 bat 'type "\\\\wsl$\\Ubuntu\\home\\krishna\\github-actions.pem"'
-            
-                echo "Testing SSH connection..."
-            
+        
+                echo "Trying SSH..."
                 bat """
-                    ssh -i "\\\\wsl${'$'}\\Ubuntu\\home\\krishna\\github-actions.pem" -o StrictHostKeyChecking=no ${env.EC2_HOST} "echo SSH connection successful"
+                    ssh -i "\\\\wsl${'$'}\\Ubuntu\\home\\krishna\\github-actions.pem" -o StrictHostKeyChecking=no ${env.EC2_HOST} "echo SSH successful"
                 """
             }
         }
-
 
 
         stage('Build Docker Image') {
