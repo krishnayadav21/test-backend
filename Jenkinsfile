@@ -48,7 +48,7 @@ pipeline {
             
                 echo "Trying SSH connection..."
             
-                bat 'ssh -i "\\\\wsl$\\Ubuntu\\home\\krishna\\github-actions.pem" -o StrictHostKeyChecking=no ubuntu@152.197.126.133 "echo Connected"'
+                bat 'ssh -i "\\\\wsl$\\Ubuntu\\home\\krishna\\github-actions.pem" -o StrictHostKeyChecking=no ubuntu@52.207.126.136 "echo Connected"'
             }
         }
 
