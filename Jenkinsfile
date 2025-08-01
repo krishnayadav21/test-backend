@@ -40,18 +40,19 @@ pipeline {
         //     }
         // }
 
-        stage('SSH Test') {
-            steps {
-                echo "Testing .pem access from WSL path..."
-            
-                bat 'type "\\\\wsl$\\Ubuntu\\home\\krishna\\github-actions.pem"'
-            
-                echo "Trying SSH connection..."
-            
-                bat 'ssh -i "\\\\wsl$\\Ubuntu\\home\\krishna\\github-actions.pem" -o StrictHostKeyChecking=no ubuntu@52.207.126.136 "echo Connected"'
+
+            stages {
+                stage('SSH Test') {
+                    steps {
+                        echo "✅ Showing PEM file contents..."
+                        bat 'type "\\\\wsl$\\Ubuntu\\home\\krishna\\github-actions.pem"'
+        
+                        echo "✅ Attempting SSH..."
+                        bat 'ssh -i "\\\\wsl$\\Ubuntu\\home\\krishna\\github-actions.pem" -o StrictHostKeyChecking=no ubuntu@152.197.126.133 "echo SSH connection successful"'
+                    }
+                }
             }
         }
-
 
 
         stage('Build Docker Image') {
