@@ -42,15 +42,16 @@ pipeline {
 
         stage('SSH Test') {
             steps {
-                echo "Checking PEM file access..."
+                echo "Testing .pem access from WSL path..."
+            
                 bat 'type "\\\\wsl$\\Ubuntu\\home\\krishna\\github-actions.pem"'
-        
-                echo "Trying SSH..."
-                bat """
-                    ssh -i "\\\\wsl${'$'}\\Ubuntu\\home\\krishna\\github-actions.pem" -o StrictHostKeyChecking=no ${env.EC2_HOST} "echo SSH successful"
-                """
+            
+                echo "Trying SSH connection..."
+            
+                bat 'ssh -i "\\\\wsl$\\Ubuntu\\home\\krishna\\github-actions.pem" -o StrictHostKeyChecking=no ubuntu@152.197.126.133 "echo Connected"'
             }
         }
+
 
 
         stage('Build Docker Image') {
