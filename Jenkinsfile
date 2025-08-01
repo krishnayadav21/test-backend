@@ -9,7 +9,7 @@ pipeline {
         DOCKER_IMAGE = 'krishnayadav21/backend'
         FULL_TAG = "${DOCKER_IMAGE}:${params.DEPLOY_VERSION}"
         EC2_USER = 'ubuntu'
-        EC2_HOST = '52.207.126.136'
+        EC2_HOST = 'ubuntu@52.207.126.136'
         EC2_KEY = credentials('ssh-key')
         PEM_PATH = "C:\\Users\\Dell\\Downloads\\github-actions.pem"
     }
